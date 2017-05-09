@@ -17,13 +17,19 @@ class DoublyLinkedList<T extends Cacheable> {
      * @return TRUE if the element was part of the list, otherwise FALSE
      */
     public boolean remove(Node<T> nodeToRemove) {
+        if (nodeToRemove == null) {
+            throw new IllegalArgumentException("Cannot pass NULL for node to be removed from the list");
+        }
+
+        if (getSize() == 0) {
+            return false;
+        }
+
         if (nodeToRemove == tail) {
             removeTail();
-            --size;
             return true;
         } else if (nodeToRemove == head) {
             removeHead();
-            --size;
             return true;
         } else if (nodeToRemove.prev != null && nodeToRemove.next != null) {
             Node<T> prevNode = nodeToRemove.prev;
@@ -129,21 +135,33 @@ class DoublyLinkedList<T extends Cacheable> {
         ++size;
     }
 
+    /**
+     * Returns the current size of this DoublyLinkedList
+     * @return the current size of this list as an int
+     */
     public int getSize() {
         return size;
     }
 
-    public List<T> traverse() {
+    List<T> traverse() {
+        return traverse(false);
+    }
+
+    List<T> traverseBackward() {
+        return traverse(true);
+    }
+
+    private List<T> traverse(boolean backward) {
         if (size == 0) {
             return Collections.emptyList();
         }
 
         List<T> result = new ArrayList<>();
-        Node<T> currentNode = head;
+        Node<T> currentNode = (backward ? tail : head);
 
         while (currentNode != null) {
             result.add(currentNode.data);
-            currentNode = currentNode.next;
+            currentNode = (backward ? currentNode.prev : currentNode.next);
         }
 
         return result;
@@ -151,8 +169,8 @@ class DoublyLinkedList<T extends Cacheable> {
 
     static class Node<T extends Cacheable> {
         private T data;
-        private Node prev;
-        private Node next;
+        private Node<T> prev;
+        private Node<T> next;
 
         public Node(T data) {
             this.data = data;
@@ -162,11 +180,11 @@ class DoublyLinkedList<T extends Cacheable> {
             return this.data;
         }
 
-        Node getPrev() {
+        Node<T> getPrev() {
             return prev;
         }
 
-        Node getNext() {
+        Node<T> getNext() {
             return next;
         }
     }

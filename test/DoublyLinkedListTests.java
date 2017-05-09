@@ -1,15 +1,15 @@
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
 public class DoublyLinkedListTests {
     @Test
     public void insertNewHeadIntoEmptyListCreatesListWithSingleElementAsHeadAndTailTest() throws Exception {
-        DoublyLinkedList<NodeType> dll = new DoublyLinkedList<>();
-        DoublyLinkedList.Node<NodeType> newHead = new DoublyLinkedList.Node<>(new NodeType(5));
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        DoublyLinkedList.Node<TestNodeType> newHead = new DoublyLinkedList.Node<>(new TestNodeType(5));
 
         assertEquals(0, dll.getSize());
         assertNull(dll.head);
@@ -17,54 +17,40 @@ public class DoublyLinkedListTests {
 
         dll.insertAsHead(newHead);
 
-        assertEquals(1, dll.getSize());
-        assertEquals(newHead, dll.head);
-        assertEquals(newHead, dll.tail);
-        assertNull(newHead.getNext());
-        assertNull(newHead.getPrev());
-
-        assertEquals(Lists.newArrayList(new NodeType(5)), dll.traverse());
+        checkThatListIsConsistent(dll, newHead, newHead, Lists.newArrayList(new TestNodeType(5)));
     }
 
     @Test
     public void insertNewHeadIntoExistingListPutsNewElementAsHeadOfList() throws Exception {
-        DoublyLinkedList<NodeType> dll = new DoublyLinkedList<>();
-        DoublyLinkedList.Node<NodeType> startingHead = new DoublyLinkedList.Node<>(new NodeType(5));
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        DoublyLinkedList.Node<TestNodeType> startingHead = new DoublyLinkedList.Node<>(new TestNodeType(5));
         dll.insertAsHead(startingHead);
 
         assertEquals(1, dll.getSize());
         assertEquals(startingHead, dll.head);
         assertEquals(startingHead, dll.tail);
 
-        DoublyLinkedList.Node<NodeType> newHead = new DoublyLinkedList.Node<>(new NodeType(10));
+        DoublyLinkedList.Node<TestNodeType> newHead = new DoublyLinkedList.Node<>(new TestNodeType(10));
         dll.insertAsHead(newHead);
 
-        assertEquals(2, dll.getSize());
-        assertEquals(newHead, dll.head);
-        assertNull(newHead.getPrev());
-        assertEquals(startingHead, dll.tail);
-
-        assertEquals(Lists.newArrayList(new NodeType(10), new NodeType(5)), dll.traverse());
+        checkThatListIsConsistent(dll, newHead, startingHead, Lists.newArrayList(new TestNodeType(10), new TestNodeType(5)));
     }
 
     @Test
     public void insertExistingHeadAsNewHeadOfListLeavesListUnchanged() throws Exception {
-        DoublyLinkedList<NodeType> dll = new DoublyLinkedList<>();
-        DoublyLinkedList.Node<NodeType> firstNodeAdded = new DoublyLinkedList.Node<>(new NodeType(5));
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        DoublyLinkedList.Node<TestNodeType> firstNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(5));
         dll.insertAsHead(firstNodeAdded);
-        DoublyLinkedList.Node<NodeType> secondNodeAdded = new DoublyLinkedList.Node<>(new NodeType(10));
+        DoublyLinkedList.Node<TestNodeType> secondNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(10));
         dll.insertAsHead(secondNodeAdded);
 
-        assertEquals(2, dll.getSize());
-        assertEquals(secondNodeAdded, dll.head);
-        assertEquals(firstNodeAdded, dll.tail);
-        assertEquals(Lists.newArrayList(new NodeType(10), new NodeType(5)), dll.traverse());
+        ArrayList<TestNodeType> expectedElements = Lists.newArrayList(new TestNodeType(10), new TestNodeType(5));
+
+        checkThatListIsConsistent(dll, secondNodeAdded, firstNodeAdded, expectedElements);
 
         dll.insertAsHead(secondNodeAdded);
-        assertEquals(2, dll.getSize());
-        assertEquals(secondNodeAdded, dll.head);
-        assertEquals(firstNodeAdded, dll.tail);
-        assertEquals(Lists.newArrayList(new NodeType(10), new NodeType(5)), dll.traverse());
+
+        checkThatListIsConsistent(dll, secondNodeAdded, firstNodeAdded, expectedElements);
     }
 
     @Test
@@ -83,65 +69,52 @@ public class DoublyLinkedListTests {
 
     @Test
     public void removeTailOnSingleElementListResultsInEmptyList() throws Exception {
-        DoublyLinkedList<NodeType> dll = new DoublyLinkedList<>();
-        DoublyLinkedList.Node<NodeType> onlyAddedNode = new DoublyLinkedList.Node<>(new NodeType(5));
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        DoublyLinkedList.Node<TestNodeType> onlyAddedNode = new DoublyLinkedList.Node<>(new TestNodeType(5));
         dll.insertAsHead(onlyAddedNode);
 
         assertEquals(1, dll.getSize());
         assertEquals(onlyAddedNode, dll.head);
         assertEquals(onlyAddedNode, dll.tail);
 
-        NodeType tailNodeData = dll.removeTail();
+        TestNodeType tailNodeData = dll.removeTail();
 
         assertEquals(tailNodeData, onlyAddedNode.getData());
-        assertEquals(0, dll.getSize());
-        assertNull(dll.head);
-        assertNull(dll.tail);
+        checkThatListIsConsistent(dll);
     }
 
     @Test
     public void removeTailOnTwoElementListReturnsExpectedElementAndProperlySetsUpNewTail() throws Exception {
-        DoublyLinkedList<NodeType> dll = new DoublyLinkedList<>();
-        DoublyLinkedList.Node<NodeType> firstNodeAdded = new DoublyLinkedList.Node<>(new NodeType(5));
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        DoublyLinkedList.Node<TestNodeType> firstNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(5));
         dll.insertAsHead(firstNodeAdded);
-        DoublyLinkedList.Node<NodeType> secondNodeAdded = new DoublyLinkedList.Node<>(new NodeType(10));
+        DoublyLinkedList.Node<TestNodeType> secondNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(10));
         dll.insertAsHead(secondNodeAdded);
 
-        assertEquals(2, dll.getSize());
-        assertEquals(secondNodeAdded, dll.head);
-        assertEquals(firstNodeAdded, dll.tail);
-        assertEquals(Lists.newArrayList(new NodeType(10), new NodeType(5)), dll.traverse());
+        ArrayList<TestNodeType> expectedElements = Lists.newArrayList(new TestNodeType(10), new TestNodeType(5));
+        checkThatListIsConsistent(dll, secondNodeAdded, firstNodeAdded, expectedElements);
 
-        NodeType removedTail = dll.removeTail();
+        TestNodeType removedTail = dll.removeTail();
         assertEquals(removedTail, firstNodeAdded.getData());
-        assertEquals(1, dll.getSize());
-        assertEquals(secondNodeAdded, dll.head);
-        assertEquals(secondNodeAdded, dll.tail);
-        assertNull(secondNodeAdded.getNext());
+        checkThatListIsConsistent(dll, secondNodeAdded, secondNodeAdded, Lists.newArrayList(new TestNodeType(10)));
     }
 
     @Test
     public void removeTailOnMoreThanTwoElementListReturnsExpectedElementAndProperlySetsUpNewTail() throws Exception {
-        DoublyLinkedList<NodeType> dll = new DoublyLinkedList<>();
-        DoublyLinkedList.Node<NodeType> firstNodeAdded = new DoublyLinkedList.Node<>(new NodeType(5));
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        DoublyLinkedList.Node<TestNodeType> firstNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(5));
         dll.insertAsHead(firstNodeAdded);
-        DoublyLinkedList.Node<NodeType> secondNodeAdded = new DoublyLinkedList.Node<>(new NodeType(10));
+        DoublyLinkedList.Node<TestNodeType> secondNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(10));
         dll.insertAsHead(secondNodeAdded);
-        DoublyLinkedList.Node<NodeType> thirdNodeAdded = new DoublyLinkedList.Node<>(new NodeType(15));
+        DoublyLinkedList.Node<TestNodeType> thirdNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(15));
         dll.insertAsHead(thirdNodeAdded);
 
-        assertEquals(3, dll.getSize());
-        assertEquals(thirdNodeAdded, dll.head);
-        assertEquals(firstNodeAdded, dll.tail);
-        assertEquals(Lists.newArrayList(new NodeType(15), new NodeType(10), new NodeType(5)), dll.traverse());
+        checkThatListIsConsistent(dll, thirdNodeAdded, firstNodeAdded, Lists.newArrayList(new TestNodeType(15), new TestNodeType(10), new TestNodeType(5)));
 
-        NodeType removedTail = dll.removeTail();
+        TestNodeType removedTail = dll.removeTail();
         assertEquals(removedTail, firstNodeAdded.getData());
-        assertEquals(2, dll.getSize());
-        assertEquals(thirdNodeAdded, dll.head);
-        assertEquals(secondNodeAdded, dll.tail);
-        assertNull(secondNodeAdded.getNext());
-        assertEquals(Lists.newArrayList(new NodeType(15), new NodeType(10)), dll.traverse());
+
+        checkThatListIsConsistent(dll, thirdNodeAdded, secondNodeAdded, Lists.newArrayList(new TestNodeType(15), new TestNodeType(10)));
     }
 
     @Test
@@ -160,54 +133,217 @@ public class DoublyLinkedListTests {
 
     @Test
     public void removeHeadOnSingleElementListResultsInEmptyList() throws Exception {
-        fail();
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        DoublyLinkedList.Node<TestNodeType> onlyAddedNode = new DoublyLinkedList.Node<>(new TestNodeType(5));
+        dll.insertAsHead(onlyAddedNode);
+
+        assertEquals(1, dll.getSize());
+        assertEquals(onlyAddedNode, dll.head);
+        assertEquals(onlyAddedNode, dll.tail);
+
+        assertEquals(onlyAddedNode.getData(), dll.removeHead());
+        checkThatListIsConsistent(dll, null, null, Collections.emptyList());
     }
 
     @Test
     public void removeHeadOnTwoOrMoreElementListReturnsExpectedElementAndProperlySetsUpNewHead() throws Exception {
-        fail();
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        DoublyLinkedList.Node<TestNodeType> firstNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(5));
+        dll.insertAsHead(firstNodeAdded);
+        DoublyLinkedList.Node<TestNodeType> secondNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(10));
+        dll.insertAsHead(secondNodeAdded);
+        DoublyLinkedList.Node<TestNodeType> thirdNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(15));
+        dll.insertAsHead(thirdNodeAdded);
+
+        checkThatListIsConsistent(dll, thirdNodeAdded, firstNodeAdded, Lists.newArrayList(new TestNodeType(15), new TestNodeType(10), new TestNodeType(5)));
+
+        assertEquals(dll.removeHead(), thirdNodeAdded.getData());
+
+        checkThatListIsConsistent(dll, secondNodeAdded, firstNodeAdded, Lists.newArrayList(new TestNodeType(10), new TestNodeType(5)));
     }
 
     @Test
     public void removeReturnsTrueIfElementIsInList() throws Exception {
-        fail();
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        DoublyLinkedList.Node<TestNodeType> firstNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(5));
+        dll.insertAsHead(firstNodeAdded);
+        DoublyLinkedList.Node<TestNodeType> secondNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(10));
+        dll.insertAsHead(secondNodeAdded);
+
+        assertEquals(firstNodeAdded, dll.tail);
+        assertTrue(dll.remove(firstNodeAdded));
+
+        checkThatListIsConsistent(dll);
     }
 
     @Test
     public void removeReturnsFalseIfElementIsNotInList() throws Exception {
-        fail();
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        DoublyLinkedList.Node<TestNodeType> firstNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(5));
+        dll.insertAsHead(firstNodeAdded);
+
+        DoublyLinkedList.Node<TestNodeType> missingNode = new DoublyLinkedList.Node<>(new TestNodeType(15));
+        DoublyLinkedList.Node<TestNodeType> current = dll.head;
+
+        // make sure node is not in list
+        while (current != null) {
+            assertNotEquals(missingNode, current);
+            current = current.getNext();
+        }
+
+        assertFalse(dll.remove(missingNode));
     }
 
     @Test
     public void removeResultsInEmptyListIfArgIsOnlyMemberOfList() throws Exception {
-        fail();
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        DoublyLinkedList.Node<TestNodeType> onlyAddedNode = new DoublyLinkedList.Node<>(new TestNodeType(5));
+        dll.insertAsHead(onlyAddedNode);
+
+        assertEquals(1, dll.getSize());
+        assertEquals(onlyAddedNode, dll.head);
+        assertEquals(onlyAddedNode, dll.tail);
+
+        assertTrue(dll.remove(onlyAddedNode));
+
+        checkThatListIsConsistent(dll, null, null, Collections.emptyList());
+    }
+
+    @Test
+    public void removeThrowsIllegalArgExceptionOnNullArg() throws Exception {
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        boolean threwAsExpected = false;
+
+        try {
+            dll.remove(null);
+        } catch (IllegalArgumentException e) {
+            threwAsExpected = true;
+        }
+
+        assertTrue(threwAsExpected);
     }
 
     @Test
     public void removeSetsUpNewHeadIfCurrentHeadIsPassedAsArg() throws Exception {
-        fail();
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        DoublyLinkedList.Node<TestNodeType> firstNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(5));
+        dll.insertAsHead(firstNodeAdded);
+        DoublyLinkedList.Node<TestNodeType> secondNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(10));
+        dll.insertAsHead(secondNodeAdded);
+
+        assertEquals(2, dll.getSize());
+        assertEquals(secondNodeAdded, dll.head);
+        assertEquals(firstNodeAdded, dll.tail);
+
+        assertTrue(dll.remove(secondNodeAdded));
+
+        checkThatListIsConsistent(dll, firstNodeAdded, firstNodeAdded, null);
     }
 
     @Test
     public void removeSetsUpNewTailIfCurrentTailIsPassedAsArg() throws Exception {
-        fail();
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        DoublyLinkedList.Node<TestNodeType> firstNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(5));
+        dll.insertAsHead(firstNodeAdded);
+        DoublyLinkedList.Node<TestNodeType> secondNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(10));
+        dll.insertAsHead(secondNodeAdded);
+
+        assertEquals(2, dll.getSize());
+        assertEquals(secondNodeAdded, dll.head);
+        assertEquals(firstNodeAdded, dll.tail);
+
+        assertTrue(dll.remove(firstNodeAdded));
+
+        checkThatListIsConsistent(dll, secondNodeAdded, secondNodeAdded, null);
     }
 
     @Test
     public void removeLeavesListInConsistentStateWhenNodeRemovedFromMiddle() throws Exception {
         // after removal, tail and head should still be valid, and list should be fully traversable
-        fail();
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        TestNodeType firstElem = new TestNodeType(5);
+        DoublyLinkedList.Node<TestNodeType> firstNodeAdded = new DoublyLinkedList.Node<>(firstElem);
+        dll.insertAsHead(firstNodeAdded);
+        TestNodeType secondElem = new TestNodeType(10);
+        DoublyLinkedList.Node<TestNodeType> secondNodeAdded = new DoublyLinkedList.Node<>(secondElem);
+        dll.insertAsHead(secondNodeAdded);
+        TestNodeType thirdElem = new TestNodeType(15);
+        DoublyLinkedList.Node<TestNodeType> thirdNodeAdded = new DoublyLinkedList.Node<>(thirdElem);
+        dll.insertAsHead(thirdNodeAdded);
+
+        checkThatListIsConsistent(dll, thirdNodeAdded, firstNodeAdded, Lists.newArrayList(thirdElem, secondElem, firstElem));
+
+        assertTrue(dll.remove(secondNodeAdded));
+
+        checkThatListIsConsistent(dll, thirdNodeAdded, firstNodeAdded, Lists.newArrayList(thirdElem, firstElem));
     }
 
     @Test
     public void removeClearsPrevAndNextPointersOnRemovedNode() throws Exception {
-        fail();
+        DoublyLinkedList<TestNodeType> dll = new DoublyLinkedList<>();
+        DoublyLinkedList.Node<TestNodeType> firstNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(5));
+        dll.insertAsHead(firstNodeAdded);
+        DoublyLinkedList.Node<TestNodeType> secondNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(10));
+        dll.insertAsHead(secondNodeAdded);
+        DoublyLinkedList.Node<TestNodeType> thirdNodeAdded = new DoublyLinkedList.Node<>(new TestNodeType(15));
+        dll.insertAsHead(thirdNodeAdded);
+
+        assertEquals(firstNodeAdded, secondNodeAdded.getNext());
+        assertEquals(thirdNodeAdded, secondNodeAdded.getPrev());
+
+        dll.remove(secondNodeAdded);
+        assertNull("expected removed node's previous pointer to be NULL", secondNodeAdded.getPrev());
+        assertNull("expected removed node's next pointer to be NULL", secondNodeAdded.getNext());
     }
 
-    private static class NodeType implements Cacheable {
+
+    private void checkThatListIsConsistent(DoublyLinkedList<TestNodeType> dll) {
+        checkThatListIsConsistent(dll, null, null, null);
+    }
+
+    private void checkThatListIsConsistent(DoublyLinkedList<TestNodeType> dll, DoublyLinkedList.Node<TestNodeType> expectedHead,
+                                           DoublyLinkedList.Node<TestNodeType> expectedTail, List<TestNodeType> expectedElementsInForwardOrder) {
+        if (dll.getSize() == 0
+                || (expectedElementsInForwardOrder != null && expectedElementsInForwardOrder.isEmpty())) {
+            assertEquals(0, dll.getSize());
+            assertNull(dll.head);
+            assertNull(dll.tail);
+        } else {
+            //list should have a non-null tail and head that equal the provided values if not-null
+            assertNotNull(dll.head);
+            if (expectedHead != null) {
+                assertEquals(expectedHead, dll.head);
+            }
+
+            assertNotNull(dll.tail);
+            if (expectedTail != null) {
+                assertEquals(expectedTail, dll.tail);
+            }
+
+            // head and tail should have null prev and next pointers respectively
+            assertNull(dll.head.getPrev());
+            assertNull(dll.tail.getNext());
+
+            // we should be able to successfully traverse list end to end, both forwards and backwards,
+            // and nodes should match up
+            if (expectedElementsInForwardOrder != null) {
+                assertEquals(expectedElementsInForwardOrder, dll.traverse());
+            }
+
+            if (expectedElementsInForwardOrder != null) {
+                List<TestNodeType> expectedElementsInReverseOrder = new ArrayList<>();
+                for (int i = expectedElementsInForwardOrder.size() - 1; i >= 0; i--) {
+                    expectedElementsInReverseOrder.add(expectedElementsInForwardOrder.get(i));
+                }
+                assertEquals(expectedElementsInReverseOrder, dll.traverseBackward());
+            }
+        }
+    }
+
+    private static class TestNodeType implements Cacheable {
         int data;
 
-        public NodeType(int data) {
+        public TestNodeType(int data) {
             this.data = data;
         }
 
@@ -221,7 +357,7 @@ public class DoublyLinkedListTests {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            NodeType nodeType = (NodeType) o;
+            TestNodeType nodeType = (TestNodeType) o;
 
             return data == nodeType.data;
         }
