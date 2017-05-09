@@ -40,8 +40,8 @@ public class LRUCache<T extends Cacheable> {
 
             if (cache.size() == maxCapacity) {
                 //evict LRU item, which is simply the tail of our list
-                DoublyLinkedList.Node<T> oldTail = lruList.removeTail();
-                cache.remove(oldTail.getData().getID());
+                T oldTail = lruList.removeTail();
+                cache.remove(oldTail.getID());
             }
 
             cache.put(uid, result);
