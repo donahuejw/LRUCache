@@ -158,8 +158,16 @@ class DoublyLinkedList<T extends Cacheable> {
             this.data = data;
         }
 
-        public T getData() {
+        T getData() {
             return this.data;
+        }
+
+        Node getPrev() {
+            return prev;
+        }
+
+        Node getNext() {
+            return next;
         }
     }
 }
