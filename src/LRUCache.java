@@ -10,7 +10,7 @@ import java.util.Optional;
  */
 public class LRUCache<T extends Cacheable> {
     private Map<String, DoublyLinkedList.Node<T>> cache;
-    DoublyLinkedList<T> lruList;
+    DoublyLinkedList<T> lruList; // not happy with making this package-private for testability.  need to revisit
     private DataSource<T> dataSource;
     private int maxCapacity;
 
