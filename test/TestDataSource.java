@@ -3,7 +3,9 @@ import java.util.Map;
 import java.util.Optional;
 
 class TestDataSource implements DataSource<TestType> {
-    int queryCount = 0;
+    private int queryCount = 0;
+    private String lastRetrievedID;
+
     Map<String, TestType> valuesToReturn = new HashMap<>();
 
     public TestDataSource() {}
@@ -16,9 +18,18 @@ class TestDataSource implements DataSource<TestType> {
         return queryCount;
     }
 
+    public void resetQueryCount() {
+        this.queryCount = 0;
+    }
+
+    public String getLastRetrievedID() {
+        return lastRetrievedID;
+    }
+
     @Override
-    public Optional getFromDataSource(String ID) throws DataSourceRetrievalException {
+    public Optional getFromDataSource(String id) throws DataSourceRetrievalException {
         ++queryCount;
-        return Optional.ofNullable(valuesToReturn.get(ID));
+        lastRetrievedID = id;
+        return Optional.ofNullable(valuesToReturn.get(id));
     }
 }
