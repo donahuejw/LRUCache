@@ -10,7 +10,7 @@ import java.util.Optional;
  */
 public class LRUCache<T extends Cacheable> {
     private Map<String, DoublyLinkedList.Node<T>> cache;
-    private DoublyLinkedList<T> lruList;
+    DoublyLinkedList<T> lruList;
     private DataSource<T> dataSource;
     private int maxCapacity;
 
